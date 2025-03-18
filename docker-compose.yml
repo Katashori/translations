@@ -1,0 +1,27 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.demo # replace with .env file name if you have one
+    depends_on:
+      - db
+  db:
+    image: postgres:17.4
+    volumes:
+      - database:/var/lib/postgresql/data # replace 'demo_database' with your volume name
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.demo # replace with .env file name if you have one
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+volumes:
+  database: # replace 'demo_database' with your volume name
